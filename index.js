@@ -15,6 +15,8 @@ require('dotenv').config({
 const userRoutes = require("./routes/users");
 console.log(process.env.HOST)
 
+//it is compulsary to use of .api/auth before use any root
+
 app.use('/api/auth',userRoutes);
 
 app.get("/api", (req, res) => {

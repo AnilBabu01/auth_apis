@@ -1,9 +1,11 @@
 const { json } = require("body-parser");
 const Users = require("../models/users");
+const Otp = require("../models/Otp");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
 const JWT_SECRET = "anilbabu$oy";
+
 const userList = async (req, res) => {
   let data = await Users.find();
   res.json(data);
@@ -69,7 +71,7 @@ const userLogin = async (req, res) => {
     }
   
     let user = await Users.findOne({ email });
-  
+    console.log(user)
     if (user) {
       let match = await bcrypt.compare(password, user.password);
       if (!match) {
@@ -98,9 +100,88 @@ const userLogin = async (req, res) => {
   }
  
 };
+const  emailsend = async (req,res)=>{
+let {  email} = req.body;
+    console.log(email)
+ let user = await Users.findOne({ email });
+    console.log(user)
+     if (user) {
+      if(user){
+        let otpscode = Math.floor((Math.random()*10000)+1)
+        let otpdata = new Otp({
+             email:req.body.email,
+             code:otpscode,
+             expireIn: new Date().getTime()+200*1000
+        })
+
+        let responce = await otpdata.save()
+        mamiler(req.body.email,otpscode)
+        res.send("Please chack your mail")
+    }
+    }
+       else
+      {
+        res.status(404).json({ success: "Email id is not exist" });
+      }
+}
+
+const resetpassword = async(req,res)=>{
+  let {  email,otpcode,cpassword} = req.body;
+     let  data = await Otp.find({email:req.body.email,code:req.body.otpcode})
+     if(data)
+     {
+      let curtime = new Date().getTime();
+      let deff = data.expireIn - curtime;
+      if(deff<0)
+      {
+        res.status(404).json({ success: "opt now exprire" });
+      }else
+      {
+        let user = await Users.findOne({email})
+        user.password=cpassword
+        user.save()
+        console.log(user)
+        
+      }
+    }
+   
+  res.send("this change password")
+}
+
+
+
+const mamiler= async(email,otp)=>{
+  var nodemailer = require('nodemailer');
+
+  var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    port:587,
+    auth: {
+      user: 'anilbabu3245@gmail.com',
+      pass: 'Anilb@123'
+    }
+  });
+  
+  var mailOptions = {
+    from: 'anilbabu3245@gmail.com',
+    to: 'anilb0175@gmail.com',
+    subject: 'Sending Email using Node.js',
+    text: 'That was easy!'
+  };
+  
+  transporter.sendMail(mailOptions, function(error, info){
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+}
 
 module.exports = {
   userList,
   createUser,
   userLogin,
+  emailsend,
+  resetpassword,
 };

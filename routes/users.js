@@ -5,6 +5,7 @@ const { body} = require('express-validator');
 const bodyParser = require("body-parser");
 var jwt = require("jsonwebtoken");
 const JWT_SECRET = "anilbabu$oy";
+
 const jwtauth =(req,res,next)=>{
     var token =req.headers.authorization;
     token =token.split(' ')[1]
@@ -36,4 +37,10 @@ router.post('/login',[
     body('email', 'Enter a valid email').isEmail(),
     body('password', 'Password must be atleast 5 characters').isLength({ min: 5 }),
 ],(userCtrl.userLogin))
+
+
+router.post('/emailsend',(userCtrl.emailsend))
+
+router.post('/changepassword',(userCtrl.resetpassword))
+
 module.exports=router;
