@@ -17,26 +17,21 @@ const UserSchema = new Schema({
         phone:{
             type:String,
         },
+        profile:{
+          type:String,
+      },
         password:{
         type:String,
         require: true,
-       
-
-    
-        } ,
+          } ,
         date:{
           type:Date,
           default: Date.now
     
         } 
-       
-
 }
  
 );
-
-
-
 const User = mongoose.model('user',UserSchema);
 
 module.exports= User;
