@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const UserSchema = new Schema({
-    
-
      name:{
         type:String,
         require: true
@@ -17,9 +15,10 @@ const UserSchema = new Schema({
         phone:{
             type:String,
         },
-        profile:{
+        filePath:{
           type:String,
-      },
+         
+        },
         password:{
         type:String,
         require: true,

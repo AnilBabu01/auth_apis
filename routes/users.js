@@ -3,6 +3,7 @@ const router = express.Router();
 const userCtrl= require('../controllers/userContreller')
 const { body} = require('express-validator');
 const multer = require("multer");
+const path= require("path")
 const bodyParser = require("body-parser");
 var jwt = require("jsonwebtoken");
 const JWT_SECRET = "anilbabu$oy";
@@ -10,14 +11,16 @@ const JWT_SECRET = "anilbabu$oy";
 var storage = multer.diskStorage({
 
         destination:function(req,file,cd) {
-            cd(null,'public/img')
+          
+            cd(null,'./public/img')
         },
         filename:function (req,file,cd) {
+          
             cd(null,Date.now()+' '+file.originalname)
         }
 })
 
-const upload = multer({ dest: storage });
+const upload = multer({ storage });
 
 const jwtauth =(req,res,next)=>{
     var token =req.headers.authorization;
@@ -38,7 +41,7 @@ router.use(bodyParser.urlencoded({extended:false}))
 
 router.get('/users',jwtauth,(userCtrl.userList))
 
-router.post('/register',upload.single('myfile'),[
+router.post('/register',upload.single('myFile'),[
     body('name', 'Enter a valid name').isLength({ min: 3 }),
     body('email', 'Enter a valid email').isEmail(),
     body('password', 'Password must be atleast 5 characters').isLength({ min: 5 }),

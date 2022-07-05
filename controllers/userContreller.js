@@ -15,9 +15,9 @@ const userList = async (req, res) => {
 const createUser = async (req, res) => {
   try {  
 
-     let profle = (req.file)?req.file.filename:"";
+     let profle = (req.file)?req.file.path:"";
     let { name, email, phone, password } = req.body;
-
+       console.log(req.file)
     //validation result
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -26,18 +26,16 @@ const createUser = async (req, res) => {
     //check in database that user is with email is allready present or not
     let user = await Users.findOne({ email });
     if (user) {
-      return res
-        .status(400)
-        .json({ success: "Sorry a user with this email already exists" });
+      return res.json({ success: "Sorry a user with this email already exists" });
     }
-  //bcrypt password
+       //bcrypt password
     const salt = await bcrypt.genSalt(10);
     const secPass = await bcrypt.hash(password, salt);
     user = await Users.create({
       name: name,
       email: email,
       phone: phone,
-      profle:profle,
+      filePath:profle,
       password: secPass,
     });
 
